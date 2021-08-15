@@ -44,8 +44,11 @@
         let insideEntry =
             false;
 
+        const lines =
+            idfFileContent.split( /(?:(?:\n\r?)|(?:\r\n?))/g )
+
         // parser
-        for ( const line of stream_lines( idfFileContent ) ) {
+        for ( const line of lines ) {
             const trimmedLine =
                 line.trim( )
 
@@ -102,33 +105,6 @@
             value,
             comment,
         ]
-    }
-
-//
-// ─── LINE STREAMER ──────────────────────────────────────────────────────────────
-//
-
-    function * stream_lines ( wholeText: string ): Generator<string, string> {
-        let current_line =
-            new Array<string> ( )
-        let previousCharacterWasLineBreak =
-            false
-        for ( const char of wholeText ) {
-            if ( char === "\n" || char === "\r" ) {
-                if ( !previousCharacterWasLineBreak ) {
-                    yield current_line.join( "" )
-                }
-                previousCharacterWasLineBreak =
-                    true
-                current_line =
-                    [ ]
-            } else {
-                previousCharacterWasLineBreak =
-                    false
-                current_line.push( char )
-            }
-        }
-        return current_line.join( "" )
     }
 
 // ────────────────────────────────────────────────────────────────────────────────

@@ -3,6 +3,10 @@
 
 A formatter engine that formats the EnergyPlus "Input Data File" (IDF)
 
+```
+npm install --save idf-formatter
+```
+
 ```ts
 import { formatIDF } from "idf-formatter"
 

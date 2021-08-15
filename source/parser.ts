@@ -16,18 +16,20 @@
 
     /** [ value, comment ] */
     export type IDFEntryRow =
-        [ string, string ]
+        [ string | null, string ]
 
 //
 // ─── CONSTANTS ──────────────────────────────────────────────────────────────────
 //
 
     const COMMENT_PARSER =
-        /^([^!]+)(!-.+)?$/
+        /^([^!]*)(!.+)?$/
+    const COMMENT_LINE =
+        /^!/
     const END_OF_LINE_SEMI_REMOVER =
         /(,|;)$/
     const EMPTY_LINE =
-        /(?:^\!)|(?:^\s*$)/
+        /^\s*$/
 
 //
 // ─── API ────────────────────────────────────────────────────────────────────────
@@ -37,20 +39,10 @@
         // total result
         const entries =
             new Array<IDFEntry> ( )
-
-        // temporary cache
-        let currentComment =
-            ""
         let currentEntry: IDFEntry =
             [ ]
-
-        function finishEntry ( ) {
-            entries.push( currentEntry )
-            currentComment =
-                ""
-            currentEntry =
-                [ ]
-        }
+        let insideEntry =
+            false;
 
         // parser
         for ( const line of stream_lines( idfFileContent ) ) {
@@ -60,35 +52,35 @@
             if ( !EMPTY_LINE.test( trimmedLine ) ) {
                 const [ valuesLine, comment ] =
                     getLineAndComment( trimmedLine )
-                const endsEntry =
-                    valuesLine.endsWith( ";" )
-                const justValues =
-                    valuesLine.replace( END_OF_LINE_SEMI_REMOVER, "" )
-                const values =
-                    justValues.split( "," )
 
-                if ( comment !== "" ) {
-                    currentComment = comment
-                }
-
-                const size =
-                    values.length
-                if ( size === 1 ) {
-                    currentEntry.push([ values[ 0 ], currentComment ])
-                } else {
-                    for ( let index = 0; index < size; index++ ) {
-                        currentEntry.push([
-                            values[ index ].trim( ),
-                            `${ currentComment }    --- Part ${ index + 1 } of ${ size }`
-                        ])
+                if ( COMMENT_LINE.test( trimmedLine ) ) {
+                    const row: IDFEntryRow =
+                        [ null, comment ]
+                    if ( insideEntry ) {
+                        currentEntry.push( row )
+                    } else {
+                        entries.push([ row ])
                     }
                 }
 
-                if ( endsEntry ) {
-                    finishEntry( )
+                else {
+                    insideEntry =
+                        true;
+                    const justValues =
+                        valuesLine.replace( END_OF_LINE_SEMI_REMOVER, "" )
+                    currentEntry.push([
+                        justValues, comment
+                    ])
+
+                    if ( valuesLine.endsWith( ";" ) ) {
+                        insideEntry =
+                            false;
+                        entries.push( currentEntry )
+                        currentEntry =
+                            [ ]
+                    }
                 }
             }
-
         }
 
         // done
@@ -103,7 +95,7 @@
         const matches =
             line.match( COMMENT_PARSER )!
         const value =
-            matches[ 1 ].trim( )
+            matches[ 1 ]!.trim( )
         const comment =
             ( matches[ 2 ] || "" ).trim( )
         return [

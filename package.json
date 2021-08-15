@@ -1,0 +1,23 @@
+{
+  "name": "idf-formatter",
+  "version": "1.0.0",
+  "description": "A formatter engine for EnergyPlus IDF File Format",
+  "main": "out/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pouyakary/idf-formatter.git"
+  },
+  "keywords": [
+    "IDF",
+    "Formatter"
+  ],
+  "author": "Pouya Kary",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/pouyakary/idf-formatter/issues"
+  },
+  "homepage": "https://github.com/pouyakary/idf-formatter#readme"
+}

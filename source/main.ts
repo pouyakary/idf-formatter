@@ -20,7 +20,7 @@
 // ─── API ────────────────────────────────────────────────────────────────────────
 //
 
-    function formatIDF ( idf: string ) {
+    export function formatIDF ( idf: string ): string {
         const parseTree =
             parseIDF( idf )
         const serializedIDF =

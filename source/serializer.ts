@@ -71,12 +71,14 @@
         const lines =
             new Array<string> ( size )
         // name line
-        lines[ 0 ] = ( `${ entry[ 0 ]! }` )
+        // lines[ 0 ] = ( `${ entry[ 0 ]! }` )
+
+        lines[ 0 ] = formatRow( entry[ 0 ]!, size == 1, false, settings )
 
         // entries
         for ( let i = 1; i < size; i++ ) {
             lines[ i ] =
-                formatRow( entry[ i ]!, i + 1 == size, settings )
+                formatRow( entry[ i ]!, i + 1 == size, true, settings )
         }
 
         // done
@@ -89,10 +91,15 @@
 
     function formatRow ( [ value, comment ]: IDFEntryRow,
                                        ends: boolean,
+                                       indent_or_not: boolean,
                                    settings: IDFFormatterSettings ): string {
         //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        const indentation =
+        let indentation:string = ""
+        if (indent_or_not) { 
+            indentation =
             " ".repeat( settings.indentation )
+        }
+        
 
         if ( value === null ) {
             return indentation + comment
@@ -105,8 +112,11 @@
             return indentation + value + ending
         }
 
-        const paddingSize =
+        let paddingSize:number =
             ( settings.commentColumnPadding - value.length ) - 1
+        if (!indent_or_not) {
+            paddingSize = paddingSize + settings.indentation
+        }
         const padding =
             ( paddingSize > 0
                 ? " ".repeat( paddingSize )
